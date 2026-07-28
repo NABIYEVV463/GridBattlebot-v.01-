@@ -23,7 +23,6 @@ import logging
 from collections import deque
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -163,7 +162,7 @@ def render_board(game):
                 if c < SIZE - 1:
                     seg.append(" ")
             lines.append("".join(seg))
-    return "```\n" + "\n".join(lines) + "\n```"
+    return "\n".join(lines)
 
 
 def move_keyboard():
@@ -186,7 +185,7 @@ def game_status_text(game):
     txt = render_board(game) + "\n"
     txt += f"🔵 {game['names'][p1]} — devor: {game['walls_left'][p1]}\n"
     txt += f"🔴 {game['names'][p2]} — devor: {game['walls_left'][p2]}\n\n"
-    txt += f"Navbat: *{turn_name}*"
+    txt += f"Navbat: {turn_name}"
     return txt
 
 
@@ -228,7 +227,6 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         game_status_text(game),
-        parse_mode=ParseMode.MARKDOWN,
         reply_markup=move_keyboard(),
     )
 
@@ -241,7 +239,6 @@ async def board_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_text(
         game_status_text(game),
-        parse_mode=ParseMode.MARKDOWN,
         reply_markup=move_keyboard(),
     )
 
@@ -300,7 +297,6 @@ async def wall_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         game_status_text(game),
-        parse_mode=ParseMode.MARKDOWN,
         reply_markup=move_keyboard(),
     )
 
@@ -346,15 +342,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if target[0] == goal_row(my_index):
             game["winner"] = me
             await query.message.reply_text(
-                render_board(game) + f"\n🏆 *{game['names'][me]}* g'alaba qozondi!",
-                parse_mode=ParseMode.MARKDOWN,
+                render_board(game) + f"\n🏆 {game['names'][me]} g'alaba qozondi!",
             )
             return
 
         game["turn"] = opp
         await query.message.reply_text(
             game_status_text(game),
-            parse_mode=ParseMode.MARKDOWN,
             reply_markup=move_keyboard(),
         )
 
@@ -365,8 +359,16 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/join — o'yinga qo'shilish\n"
         "/board — joriy holatni ko'rsatish\n"
         "/wall H|V qator ustun — devor qo'yish (masalan: /wall H 3 2)\n"
+        "/reset — shu chatdagi o'yinni bekor qilib, qaytadan boshlash\n"
         "Yurish uchun tugmalardan foydalaning."
     )
+
+
+async def reset_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    if chat_id in GAMES:
+        del GAMES[chat_id]
+    await update.message.reply_text("O'yin tozalandi. Qaytadan boshlash uchun /newgame yozing.")
 
 
 def main():
@@ -380,6 +382,7 @@ def main():
     app.add_handler(CommandHandler("board", board_cmd))
     app.add_handler(CommandHandler("wall", wall_cmd))
     app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("reset", reset_cmd))
     app.add_handler(CallbackQueryHandler(button_handler))
 
     logger.info("Bot ishga tushdi.")
