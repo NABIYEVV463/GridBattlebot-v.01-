@@ -1,0 +1,16 @@
+{
+  "name": "grid-battle-server",
+  "version": "1.0.0",
+  "description": "Grid Battle — onlayn strategik o'yin serveri (WebSocket + Express)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "bot": "node bot.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.0",
+    "dotenv": "^16.4.5",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
