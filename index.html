@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Grid Battle — Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Telegram bo'lsa shu SDK foydalanuvchi ma'lumotini va temani beradi; oddiy saytda sukut bilan e'tiborsiz qoldiriladi -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+  <!-- ===== LOBBY ===== -->
+  <section id="screen-lobby" class="screen">
+    <h1>Grid Battle</h1>
+    <div class="subtitle">7×7 maydonda 🔴 va 🔵 to‘qnashadi. Onlayn — istalgan qurilmadan.</div>
+
+    <div id="name-gate" class="card">
+      <label class="lbl">Ismingiz</label>
+      <input id="name-input" maxlength="24" placeholder="Masalan: Aziz" />
+      <button class="ctrl wide primary" id="btn-save-name">Davom etish</button>
+    </div>
+
+    <div id="lobby-main" class="card hidden">
+      <div class="profile-row">
+        <div>
+          <div class="pname" id="p-name">—</div>
+          <div class="prating">🏆 <span id="p-rating">1200</span> reyting · <span id="p-wl">0W / 0L</span></div>
+        </div>
+      </div>
+
+      <button class="ctrl wide primary" id="btn-quick">⚡ Tezkor o'yin</button>
+      <div class="controls-row">
+        <button class="ctrl" id="btn-create">➕ Xona yaratish</button>
+        <button class="ctrl" id="btn-join-toggle">🔑 Xonaga qo'shilish</button>
+      </div>
+      <div id="join-box" class="hidden">
+        <input id="code-input" maxlength="4" placeholder="XONA KODI" style="text-transform:uppercase" />
+        <button class="ctrl wide" id="btn-join">Qo'shilish</button>
+      </div>
+
+      <div class="leaderboard">
+        <div class="lb-title">🏆 Reyting jadvali</div>
+        <div id="lb-list"></div>
+      </div>
+    </div>
+
+    <div id="waiting-box" class="card hidden">
+      <div class="status">Raqib kutilmoqda…</div>
+      <div id="room-code-display" class="room-code"></div>
+      <div class="subtitle">Ushbu kodni do'stingizga yuboring</div>
+      <button class="ctrl" id="btn-cancel-wait">Bekor qilish</button>
+    </div>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="screen-game" class="screen hidden">
+    <div class="hud">
+      <div class="player-card" id="card-blue">
+        <div class="row"><span class="dot blue"></span><span id="name-blue">2-O'YINCHI</span></div>
+        <div class="meta">🎯 pastki qator</div>
+        <div class="walls">🧱 <span id="walls-blue">10</span> devor</div>
+      </div>
+      <div class="player-card" id="card-red">
+        <div class="row"><span class="dot red"></span><span id="name-red">1-O'YINCHI</span></div>
+        <div class="meta">🎯 yuqori qator</div>
+        <div class="walls">🧱 <span id="walls-red">10</span> devor</div>
+      </div>
+    </div>
+
+    <div class="timerwrap"><div class="timerbar" id="timerbar"></div></div>
+
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <button class="ctrl" id="btn-move">🚶 Yurish</button>
+        <button class="ctrl" id="btn-h">↔ Devor</button>
+        <button class="ctrl" id="btn-v">↕ Devor</button>
+      </div>
+      <button class="ctrl" id="btn-leave">🏠 Xonadan chiqish</button>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <div class="overlay" id="overlay">
+    <div class="win-card">
+      <div class="trophy" id="win-trophy">🏆</div>
+      <h2 id="win-title">YOU WIN!</h2>
+      <p id="win-sub">G'alaba qozonildi</p>
+      <div class="actions">
+        <button class="revansh" id="btn-revansh">🔄 REVANSH</button>
+        <button class="menu" id="btn-menu">🏠 MENYU</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="network.js"></script>
+  <script src="board.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
