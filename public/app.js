@@ -18,6 +18,12 @@
   function show(el) { el.classList.remove("hidden"); }
   function hide(el) { el.classList.add("hidden"); }
 
+  // localStorage ba'zi brauzerlarda (masalan ilova ichidagi brauzerlar,
+  // maxfiylik rejimi) xatolik berishi mumkin — shu sabab har doim
+  // try/catch bilan o'raymiz, aks holda butun tugma ishlamay qoladi.
+  function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function safeSet(key, val) { try { localStorage.setItem(key, val); } catch (e) { /* e'tiborsiz */ } }
+
   // ---------- Identity: Telegram bo'lsa avtomatik, bo'lmasa localStorage ----------
   function initIdentity() {
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -28,8 +34,8 @@
       Network.send("identify", { id: myId, name: myName });
       return;
     }
-    const savedId = localStorage.getItem("gb_id");
-    const savedName = localStorage.getItem("gb_name");
+    const savedId = safeGet("gb_id");
+    const savedName = safeGet("gb_name");
     if (savedId && savedName) {
       myId = savedId; myName = savedName;
       Network.send("identify", { id: myId, name: myName });
@@ -44,8 +50,8 @@
     if (!val) return;
     myName = val;
     myId = "guest_" + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem("gb_id", myId);
-    localStorage.setItem("gb_name", myName);
+    safeSet("gb_id", myId);
+    safeSet("gb_name", myName);
     Network.send("identify", { id: myId, name: myName });
     hide($("name-gate")); show($("lobby-main"));
   });
@@ -131,3 +137,81 @@
     showScreen("game");
     draw();
     if (lastState.status === "playing") startTicker();
+    if (lastState.status === "finished") {
+      clearInterval(tickHandle);
+      showWin(lastState.winner);
+    } else {
+      overlay.classList.remove("show");
+    }
+  });
+
+  Network.on("game_over", (msg) => {
+    $("p-rating").textContent = msg.youWin ? msg.winnerRating : msg.loserRating;
+  });
+
+  // ---------- Mode buttons ----------
+  $("btn-move").addEventListener("click", () => { mode = "move"; draw(); });
+  $("btn-h").addEventListener("click", () => { mode = "h"; draw(); });
+  $("btn-v").addEventListener("click", () => { mode = "v"; draw(); });
+
+  function draw() {
+    if (!lastState) return;
+    BoardUI.render({
+      state: lastState,
+      legalMoves: lastLegalMoves,
+      myColor,
+      mode,
+      onMove: (r, c) => { Network.send("move", { r, c }); mode = "move"; },
+      onWall: (orientation, wr, wc) => Network.send("wall", { orientation, wr, wc }),
+    });
+    $("walls-red").textContent = lastState.wallsLeft.red;
+    $("walls-blue").textContent = lastState.wallsLeft.blue;
+    $("card-red").classList.toggle("active", lastState.current === "red" && lastState.status === "playing");
+    $("card-blue").classList.toggle("active", lastState.current === "blue" && lastState.status === "playing");
+    $("btn-move").classList.toggle("selected", mode === "move");
+    $("btn-h").classList.toggle("selected", mode === "h");
+    $("btn-v").classList.toggle("selected", mode === "v");
+    const isMyTurn = lastState.status === "playing" && lastState.current === myColor;
+    $("btn-h").disabled = !isMyTurn || lastState.wallsLeft[myColor] <= 0;
+    $("btn-v").disabled = !isMyTurn || lastState.wallsLeft[myColor] <= 0;
+    $("status").classList.remove("err");
+    $("status").textContent = lastState.status === "playing"
+      ? (isMyTurn ? "Sizning navbatingiz" : "Raqib navbati…")
+      : "";
+  }
+
+  function startTicker() {
+    clearInterval(tickHandle);
+    tickHandle = setInterval(() => {
+      if (!lastState || !lastState.turnEndsAt) return;
+      const remain = Math.max(0, lastState.turnEndsAt - Date.now());
+      const pct = Math.max(0, (remain / 30000) * 100);
+      const bar = $("timerbar");
+      bar.style.width = pct + "%";
+      bar.classList.toggle("low", remain <= 8000);
+    }, 250);
+  }
+
+  const overlay = $("overlay");
+  function showWin(winner) {
+    $("win-trophy").textContent = winner === "red" ? "🔴🏆" : "🔵🏆";
+    const iWon = winner === myColor;
+    $("win-title").textContent = iWon ? "SIZ YUTDINGIZ!" : "SIZ YUTQAZDINGIZ";
+    $("win-sub").textContent = (winner === "red" ? $("name-red").textContent : $("name-blue").textContent) + " g'alaba qozondi";
+    overlay.classList.add("show");
+  }
+  $("btn-revansh").addEventListener("click", () => {
+    Network.send("rematch");
+    $("win-sub").textContent = "Raqibning tasdig'i kutilmoqda…";
+  });
+  $("btn-menu").addEventListener("click", () => {
+    Network.send("leave_room");
+    overlay.classList.remove("show");
+    clearInterval(tickHandle);
+    showScreen("lobby");
+    show($("lobby-main")); hide($("waiting-box"));
+    refreshLeaderboard();
+  });
+
+  Network.on("open", initIdentity);
+})();
