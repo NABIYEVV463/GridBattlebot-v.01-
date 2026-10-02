@@ -119,90 +119,15 @@
   Network.on("state", (msg) => {
     lastState = msg.state;
     lastLegalMoves = msg.legalMoves;
-    if (!myColor) {
-      // spectator yoki reconnect holati — hozircha rangni aniqlab bo'lmasa kuzatuvchi sifatida ko'ramiz
-    }
-    hide($("waiting-box"));
-    showScreen("game");
     $("name-red").textContent = msg.players.red ? msg.players.red.name : "1-O'YINCHI";
     $("name-blue").textContent = msg.players.blue ? msg.players.blue.name : "2-O'YINCHI";
+
+    if (lastState.status === "waiting") {
+      // Raqib hali qo'shilmadi — xona kodi ekranida qolaveramiz, o'yin ekraniga o'tmaymiz
+      return;
+    }
+
+    hide($("waiting-box"));
+    showScreen("game");
     draw();
     if (lastState.status === "playing") startTicker();
-    if (lastState.status === "finished") {
-      clearInterval(tickHandle);
-      showWin(lastState.winner);
-    } else {
-      overlay.classList.remove("show");
-    }
-  });
-
-  Network.on("game_over", (msg) => {
-    $("p-rating").textContent = msg.youWin ? msg.winnerRating : msg.loserRating;
-  });
-
-  // ---------- Mode buttons ----------
-  $("btn-move").addEventListener("click", () => { mode = "move"; draw(); });
-  $("btn-h").addEventListener("click", () => { mode = "h"; draw(); });
-  $("btn-v").addEventListener("click", () => { mode = "v"; draw(); });
-
-  function draw() {
-    if (!lastState) return;
-    BoardUI.render({
-      state: lastState,
-      legalMoves: lastLegalMoves,
-      myColor,
-      mode,
-      onMove: (r, c) => { Network.send("move", { r, c }); mode = "move"; },
-      onWall: (orientation, wr, wc) => Network.send("wall", { orientation, wr, wc }),
-    });
-    $("walls-red").textContent = lastState.wallsLeft.red;
-    $("walls-blue").textContent = lastState.wallsLeft.blue;
-    $("card-red").classList.toggle("active", lastState.current === "red" && lastState.status === "playing");
-    $("card-blue").classList.toggle("active", lastState.current === "blue" && lastState.status === "playing");
-    $("btn-move").classList.toggle("selected", mode === "move");
-    $("btn-h").classList.toggle("selected", mode === "h");
-    $("btn-v").classList.toggle("selected", mode === "v");
-    const isMyTurn = lastState.status === "playing" && lastState.current === myColor;
-    $("btn-h").disabled = !isMyTurn || lastState.wallsLeft[myColor] <= 0;
-    $("btn-v").disabled = !isMyTurn || lastState.wallsLeft[myColor] <= 0;
-    $("status").classList.remove("err");
-    $("status").textContent = lastState.status === "playing"
-      ? (isMyTurn ? "Sizning navbatingiz" : "Raqib navbati…")
-      : "";
-  }
-
-  function startTicker() {
-    clearInterval(tickHandle);
-    tickHandle = setInterval(() => {
-      if (!lastState || !lastState.turnEndsAt) return;
-      const remain = Math.max(0, lastState.turnEndsAt - Date.now());
-      const pct = Math.max(0, (remain / 30000) * 100);
-      const bar = $("timerbar");
-      bar.style.width = pct + "%";
-      bar.classList.toggle("low", remain <= 8000);
-    }, 250);
-  }
-
-  const overlay = $("overlay");
-  function showWin(winner) {
-    $("win-trophy").textContent = winner === "red" ? "🔴🏆" : "🔵🏆";
-    const iWon = winner === myColor;
-    $("win-title").textContent = iWon ? "SIZ YUTDINGIZ!" : "SIZ YUTQAZDINGIZ";
-    $("win-sub").textContent = (winner === "red" ? $("name-red").textContent : $("name-blue").textContent) + " g'alaba qozondi";
-    overlay.classList.add("show");
-  }
-  $("btn-revansh").addEventListener("click", () => {
-    Network.send("rematch");
-    $("win-sub").textContent = "Raqibning tasdig'i kutilmoqda…";
-  });
-  $("btn-menu").addEventListener("click", () => {
-    Network.send("leave_room");
-    overlay.classList.remove("show");
-    clearInterval(tickHandle);
-    showScreen("lobby");
-    show($("lobby-main")); hide($("waiting-box"));
-    refreshLeaderboard();
-  });
-
-  Network.on("open", initIdentity);
-})();
