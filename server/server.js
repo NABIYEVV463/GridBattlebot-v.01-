@@ -15,8 +15,10 @@ const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
 
-app.get("/api/leaderboard", (req, res) => {
-  res.json(store.leaderboard(20));
+app.get("/api/room/:code", (req, res) => {
+  const room = rooms.rooms.get(req.params.code.toUpperCase());
+  if (!room) return res.status(404).json({ error: "not found" });
+  res.json(room.state);
 });
 
 const server = http.createServer(app);
