@@ -6,8 +6,8 @@
 // va WEBAPP_URL muhit o'zgaruvchilari (Render → Environment) to'ldirilgan bo'lsa.
 
 function startBot() {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const webAppUrl = process.env.WEBAPP_URL;
+  const token = process.env.8761535124:AAH21FYPvV31VpwCP5Re06ZDVGv94RICVnM;
+  const webAppUrl = process.env.https://gridbattlebot-v-01.onrender.com;
 
   if (!token || !webAppUrl) {
     console.log("Telegram bot o'tkazib yuborildi: TELEGRAM_BOT_TOKEN / WEBAPP_URL o'rnatilmagan");
