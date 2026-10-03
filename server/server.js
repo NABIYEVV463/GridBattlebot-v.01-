@@ -101,5 +101,6 @@ setInterval(() => {
   });
 }, 30000);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;const { startBot } = require("./bot");
+startBot();
 server.listen(PORT, () => console.log("Grid Battle server " + PORT + "-portda ishga tushdi"));
