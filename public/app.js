@@ -217,5 +217,43 @@ $("btn-rules").addEventListener("click", () => $("rules-overlay").classList.add(
   $("btn-rules-game").addEventListener("click", () => $("rules-overlay").classList.add("show"));
   $("btn-close-rules").addEventListener("click", () => $("rules-overlay").classList.remove("show"));
 
+// ---------- Profil ----------
+  function escapeHtml2(s) { return s.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m])); }
+
+  function openProfile() {
+    $("profile-overlay").classList.add("show");
+    $("profile-name-input").value = myName || "";
+    fetch("/api/player/" + myId).then((r) => r.json()).then((p) => {
+      const winrate = p.games > 0 ? Math.round((p.wins / p.games) * 100) : 0;
+      $("stat-games").textContent = p.games;
+      $("stat-winrate").textContent = winrate + "%";
+      $("stat-rank").textContent = p.rank ? ("#" + p.rank) : "—";
+      $("profile-history").innerHTML = (p.history || []).map((h) => {
+        const cls = h.result === "win" ? "win" : "loss";
+        const sign = h.delta > 0 ? "+" : "";
+        const date = new Date(h.ts).toLocaleDateString();
+        return `<div class="history-row ${cls}">
+          <span>${h.result === "win" ? "✅" : "❌"} <span class="h-opp">${escapeHtml2(h.opponent)}</span></span>
+          <span class="h-delta">${sign}${h.delta}</span>
+          <span class="h-date">${date}</span>
+        </div>`;
+      }).join("") || '<div class="history-row"><span>Hali o\'yinlar yo\'q</span></div>';
+    }).catch(() => {});
+  }
+
+  $("btn-profile").addEventListener("click", openProfile);
+  $("btn-close-profile").addEventListener("click", () => $("profile-overlay").classList.remove("show"));
+  $("btn-save-profile-name").addEventListener("click", () => {
+    const val = $("profile-name-input").value.trim();
+    if (!val) return;
+    myName = val;
+    safeSet("gb_name", myName);
+    Network.send("rename", { name: myName });
+  });
+
+  $("btn-rules").addEventListener("click", () => $("rules-overlay").classList.add("show"));
+  $("btn-rules-game").addEventListener("click", () => $("rules-overlay").classList.add("show"));
+  $("btn-close-rules").addEventListener("click", () => $("rules-overlay").classList.remove("show"));
+
   Network.on("open", initIdentity);
 })();
