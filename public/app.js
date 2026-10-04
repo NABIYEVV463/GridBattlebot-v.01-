@@ -213,5 +213,9 @@
     refreshLeaderboard();
   });
 
+$("btn-rules").addEventListener("click", () => $("rules-overlay").classList.add("show"));
+  $("btn-rules-game").addEventListener("click", () => $("rules-overlay").classList.add("show"));
+  $("btn-close-rules").addEventListener("click", () => $("rules-overlay").classList.remove("show"));
+
   Network.on("open", initIdentity);
 })();
