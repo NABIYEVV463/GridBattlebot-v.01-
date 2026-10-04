@@ -104,3 +104,16 @@ button.ctrl:disabled{opacity:.35;cursor:not-allowed;}
 .rules-text b{color:var(--brass-bright);}
 .win-card .menu.wide{width:100%;}
 
+/* ---- Profile overlay ---- */
+.profile-edit{margin-bottom:14px;display:flex;flex-direction:column;gap:8px;}
+.profile-stats{display:flex;justify-content:space-between;background:var(--panel-2);border-radius:9px;padding:12px 8px;margin-bottom:14px;}
+.profile-stats > div{flex:1;text-align:center;font-size:10.5px;color:#8b93a7;}
+.profile-stats .num{font-family:'Fraunces',serif;font-size:19px;color:var(--brass-bright);margin-bottom:2px;}
+.profile-history{max-height:200px;overflow-y:auto;margin-bottom:6px;}
+.history-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:7px 0;border-bottom:1px dashed var(--line);}
+.history-row .h-opp{color:var(--parchment);}
+.history-row .h-delta{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.history-row.win .h-delta{color:var(--ok);}
+.history-row.loss .h-delta{color:#e2604c;}
+.history-row .h-date{color:#8b93a7;font-size:10.5px;}
+
