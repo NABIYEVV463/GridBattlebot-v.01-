@@ -27,7 +27,7 @@ function getOrCreatePlayer(id, name) {
     db.players[id] = {
       id,
       name: name || "O'yinchi",
-      rating: 0,
+      rating: 1200,
       wins: 0,
       losses: 0,
       games: 0,
@@ -39,6 +39,24 @@ function getOrCreatePlayer(id, name) {
     save(db);
   }
   return db.players[id];
+}
+
+// O'qish uchun — yangi o'yinchi yaratmaydi (profil ekranida foydalanish uchun).
+function getPlayer(id) {
+  const db = load();
+  return db.players[id] || null;
+}
+
+function getRank(id) {
+  const db = load();
+  const sorted = Object.values(db.players).sort((a, b) => b.rating - a.rating);
+  const idx = sorted.findIndex((p) => p.id === id);
+  return idx === -1 ? null : idx + 1;
+}
+
+function totalPlayers() {
+  const db = load();
+  return Object.keys(db.players).length;
 }
 
 function expectedScore(rA, rB) {
@@ -78,4 +96,4 @@ function leaderboard(limit = 20) {
     .map(({ id, name, rating, wins, losses, games }) => ({ id, name, rating, wins, losses, games }));
 }
 
-module.exports = { getOrCreatePlayer, recordResult, leaderboard };
+module.exports = { getOrCreatePlayer, getPlayer, getRank, totalPlayers, recordResult, leaderboard };
