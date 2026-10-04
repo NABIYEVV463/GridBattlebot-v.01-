@@ -15,10 +15,14 @@ const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
 
-app.get("/api/room/:code", (req, res) => {
-  const room = rooms.rooms.get(req.params.code.toUpperCase());
-  if (!room) return res.status(404).json({ error: "not found" });
-  res.json(room.state);
+app.get("/api/leaderboard", (req, res) => {
+  res.json(store.leaderboard(20));
+});
+
+app.get("/api/player/:id", (req, res) => {
+  const p = store.getPlayer(req.params.id);
+  if (!p) return res.status(404).json({ error: "not found" });
+  res.json({ ...p, rank: store.getRank(req.params.id), total: store.totalPlayers() });
 });
 
 const server = http.createServer(app);
@@ -47,7 +51,16 @@ wss.on("connection", (ws) => {
         const name = (msg.name || "O'yinchi").slice(0, 24);
         ws.identity = { id, name, isGuestUnrated: !!msg.isGuest };
         const player = store.getOrCreatePlayer(id, name);
-        send(ws, "identified", { id, name, rating: player.rating, wins: player.wins, losses: player.losses });
+        send(ws, "identified", { id, name: player.name, rating: player.rating, wins: player.wins, losses: player.losses });
+        break;
+      }
+      case "rename": {
+        if (!ws.identity) return;
+        const newName = (msg.name || "").trim().slice(0, 24);
+        if (!newName) return;
+        ws.identity.name = newName;
+        const player = store.getOrCreatePlayer(ws.identity.id, newName);
+        send(ws, "identified", { id: player.id, name: player.name, rating: player.rating, wins: player.wins, losses: player.losses });
         break;
       }
       case "create_room": {
