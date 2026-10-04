@@ -97,3 +97,10 @@ button.ctrl:disabled{opacity:.35;cursor:not-allowed;}
 .win-card button{flex:1;padding:11px;border-radius:9px;border:none;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12.5px;cursor:pointer;}
 .win-card .revansh{background:var(--brass-bright);color:#1c1206;}
 .win-card .menu{background:var(--panel-2);color:var(--parchment);border:1px solid var(--line);}
+
+.rules-card{max-width:340px;max-height:78vh;overflow-y:auto;text-align:left;}
+.rules-card h2{font-family:'Fraunces',serif;font-size:20px;text-align:center;margin:0 0 14px;}
+.rules-text p{font-size:12.5px;line-height:1.6;color:var(--parchment-dim);margin:0 0 12px;}
+.rules-text b{color:var(--brass-bright);}
+.win-card .menu.wide{width:100%;}
+
