@@ -15,7 +15,7 @@
   <!-- ===== LOBBY ===== -->
   <section id="screen-lobby" class="screen">
     <h1>Grid Battle</h1>
-    <div class="subtitle">Grid battlega hush kelibsiz🗿.</div>
+    <div class="subtitle">Onlayn • Multiplayer • Jumboq</div>
 
     <div id="name-gate" class="card">
       <label class="lbl">Ismingiz</label>
@@ -36,6 +36,7 @@
         <button class="ctrl" id="btn-create">➕ Xona yaratish</button>
         <button class="ctrl" id="btn-join-toggle">🔑 Xonaga qo'shilish</button>
       </div>
+      <button class="ctrl wide" id="btn-rules">📜 O'yin qoidalari</button>
       <div id="join-box" class="hidden">
         <input id="code-input" maxlength="4" placeholder="XONA KODI" style="text-transform:uppercase" />
         <button class="ctrl wide" id="btn-join">Qo'shilish</button>
@@ -82,7 +83,10 @@
         <button class="ctrl" id="btn-h">↔ Devor</button>
         <button class="ctrl" id="btn-v">↕ Devor</button>
       </div>
-      <button class="ctrl" id="btn-leave">🏠 Xonadan chiqish</button>
+      <div class="controls-row">
+        <button class="ctrl" id="btn-leave">🏠 Xonadan chiqish</button>
+        <button class="ctrl" id="btn-rules-game">📜 Qoidalar</button>
+      </div>
     </div>
     <div class="status" id="status"></div>
   </section>
@@ -95,6 +99,22 @@
       <div class="actions">
         <button class="revansh" id="btn-revansh">🔄 REVANSH</button>
         <button class="menu" id="btn-menu">🏠 MENYU</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="rules-overlay">
+    <div class="win-card rules-card">
+      <h2>📜 O'yin qoidalari</h2>
+      <div class="rules-text">
+        <p><b>🎯 Maqsad</b><br>Raqibdan oldin, qarshi tomondagi oxirgi qatorga yeting.</p>
+        <p><b>🚶 Yurish</b><br>Har safar 1 ta katak — oldinga, chapga yoki o'ngga. Orqaga yurish mumkin emas. Raqib turgan katakka kira olmaysiz.</p>
+        <p><b>🧱 Devor</b><br>Har bir o'yinchida 10 ta devor bor. Devor 2 katak uzunligida, gorizontal (↔) yoki vertikal (↕) qo'yiladi va raqibning yo'lini to'sadi. Lekin raqibni <b>butunlay</b> qamab qo'yib bo'lmaydi — doim kamida bitta yo'l qolishi shart.</p>
+        <p><b>⏱️ Taymer</b><br>Har bir yurish uchun 30 soniya beriladi. Vaqt tugasa, yurish amalga oshmaydi va navbat avtomatik raqibga o'tadi.</p>
+        <p><b>🏆 G'alaba</b><br>Qarshi tomondagi oxirgi qatorga birinchi bo'lib yetib borgan o'yinchi g'olib bo'ladi.</p>
+      </div>
+      <div class="actions">
+        <button class="menu wide" id="btn-close-rules">Tushunarli</button>
       </div>
     </div>
   </div>
