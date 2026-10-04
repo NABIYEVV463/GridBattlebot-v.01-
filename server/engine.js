@@ -37,10 +37,16 @@ function edgeBlocked(r1, c1, r2, c2, walls) {
   }
 }
 
-function neighbors(r, c, walls) {
+// MUHIM: o'yinda orqaga yurish taqiqlangan (faqat oldinga/chapga/o'ngga).
+// Shu sabab "yo'l qolganmi" tekshiruvi ham FAQAT shu uchta yo'nalishni
+// hisobga olishi kerak — aks holda "orqaga aylanib o'tish mumkin" deb
+// noto'g'ri hisoblab, haqiqiy qopqonga yo'l qo'yib yuboradi.
+function neighborsFor(player, r, c, walls) {
   const res = [];
-  for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
-    const nr = r + dr, nc = c + dc;
+  const forwardDelta = player === "red" ? -1 : 1;
+  const dirs = [{ dr: forwardDelta, dc: 0 }, { dr: 0, dc: -1 }, { dr: 0, dc: 1 }];
+  for (const d of dirs) {
+    const nr = r + d.dr, nc = c + d.dc;
     if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
     if (edgeBlocked(r, c, nr, nc, walls)) continue;
     res.push([nr, nc]);
@@ -56,7 +62,7 @@ function pathExists(player, pos, target, walls) {
   while (q.length) {
     const [r, c] = q.shift();
     if (r === goalRow) return true;
-    for (const [nr, nc] of neighbors(r, c, walls)) {
+    for (const [nr, nc] of neighborsFor(player, r, c, walls)) {
       const k = nr + "," + nc;
       if (!seen.has(k)) {
         seen.add(k);
@@ -72,17 +78,10 @@ function legalMoves(state, player) {
   const pos = state.pos[player];
   const opp = player === "red" ? "blue" : "red";
   const oppPos = state.pos[opp];
-  const forwardDelta = player === "red" ? -1 : 1;
-  const dirs = [{ dr: forwardDelta, dc: 0 }, { dr: 0, dc: -1 }, { dr: 0, dc: 1 }];
-  const moves = [];
-  for (const d of dirs) {
-    const nr = pos.r + d.dr, nc = pos.c + d.dc;
-    if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-    if (nr === oppPos.r && nc === oppPos.c) continue;
-    if (edgeBlocked(pos.r, pos.c, nr, nc, state.walls)) continue;
-    moves.push({ r: nr, c: nc });
-  }
-  return moves;
+  const candidates = neighborsFor(player, pos.r, pos.c, state.walls);
+  return candidates
+    .filter(([nr, nc]) => !(nr === oppPos.r && nc === oppPos.c))
+    .map(([nr, nc]) => ({ r: nr, c: nc }));
 }
 
 function hSlotCells(wr, wc) {
