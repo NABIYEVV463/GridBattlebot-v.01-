@@ -27,7 +27,7 @@ function getOrCreatePlayer(id, name) {
     db.players[id] = {
       id,
       name: name || "O'yinchi",
-      rating: 1200,
+      rating: 0,
       wins: 0,
       losses: 0,
       games: 0,
