@@ -15,7 +15,7 @@
   <!-- ===== LOBBY ===== -->
   <section id="screen-lobby" class="screen">
     <h1>Grid Battle</h1>
-    <div class="subtitle">Onlayn • Multiplayer • Jumboq</div>
+    <div class="subtitle">Online • Multiplayer • Jumboq</div>
 
     <div id="name-gate" class="card">
       <label class="lbl">Ismingiz</label>
@@ -29,6 +29,7 @@
           <div class="pname" id="p-name">—</div>
           <div class="prating">🏆 <span id="p-rating">1200</span> reyting · <span id="p-wl">0W / 0L</span></div>
         </div>
+        <button class="ctrl" id="btn-profile">👤 Profil</button>
       </div>
 
       <button class="ctrl wide primary" id="btn-quick">⚡ Tezkor o'yin</button>
@@ -115,6 +116,31 @@
       </div>
       <div class="actions">
         <button class="menu wide" id="btn-close-rules">Tushunarli</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="profile-overlay">
+    <div class="win-card rules-card">
+      <h2>👤 Profil</h2>
+
+      <div class="profile-edit">
+        <label class="lbl">Ism</label>
+        <input id="profile-name-input" maxlength="24" />
+        <button class="ctrl wide" id="btn-save-profile-name">Ismni saqlash</button>
+      </div>
+
+      <div class="profile-stats" id="profile-stats">
+        <div><div class="num" id="stat-games">0</div>O'yinlar</div>
+        <div><div class="num" id="stat-winrate">0%</div>G'alaba foizi</div>
+        <div><div class="num" id="stat-rank">—</div>O'rin</div>
+      </div>
+
+      <div class="lb-title">📜 So'nggi o'yinlar</div>
+      <div class="profile-history" id="profile-history"></div>
+
+      <div class="actions">
+        <button class="menu wide" id="btn-close-profile">Yopish</button>
       </div>
     </div>
   </div>
